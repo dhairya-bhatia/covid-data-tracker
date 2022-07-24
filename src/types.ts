@@ -1,7 +1,5 @@
 export interface headers {
   id: keyof CountriesDataKeys;
-  numeric: boolean;
-  disablePadding: boolean;
   label: string;
 }
 
@@ -21,7 +19,7 @@ export interface CountriesData {
 }
 
 export interface FormattedCountriesData {
-  //   id: string;
+  id: string;
   country: string;
   newConfirmed: number;
   totalConfirmed: number;
@@ -59,4 +57,8 @@ export interface TableHeadersProps {
     event: React.MouseEvent<unknown>,
     property: keyof CountriesDataKeys
   ) => void;
+}
+export interface Filter {
+  filterName: keyof CountriesDataKeys;
+  value: string;
 }

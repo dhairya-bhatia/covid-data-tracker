@@ -13,7 +13,7 @@ export const formatGlobalData = (data: GlobalData) => {
 
 export const formatCountryData = (data: CountriesData[]) => {
   return data.map((countryData) => ({
-    // id: countryData.ID,
+    id: countryData.ID,
     country: countryData.Country,
     newConfirmed: countryData.NewConfirmed,
     totalConfirmed: countryData.TotalConfirmed,

@@ -1,15 +1,18 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow
-} from "@mui/material";
+// material-ui
+import Box from "@mui/material/Box";
+ import Paper from "@mui/material/Paper";
+ import Table from "@mui/material/Table";
+ import TableBody from "@mui/material/TableBody";
+ import TableCell from "@mui/material/TableCell";
+ import TableContainer from "@mui/material/TableContainer";
+ import TableRow from "@mui/material/TableRow";
+ // types
 import { CountriesDataKeys, Order, TableDataProps } from "../../types";
+// nested components
 import TableHeaders from "./TableHeaders";
+// fixtures
+import { headerCells } from "../../fixtures";
 
 const CountriesTable = ({ rows }: TableDataProps) => {
   /* states */
@@ -64,18 +67,18 @@ const CountriesTable = ({ rows }: TableDataProps) => {
             />
             <TableBody>
               {rows.sort(getComparator(order, orderBy)).map((row, index) => {
-                const labelId = `enhanced-table-checkbox-${index}`;
                 return (
-                  <TableRow>
-                    {Object.entries(row).map(([key, val]) => {
+                  <TableRow key={row.id}>
+                    {headerCells.map((item) => {
                       return (
                         <TableCell
-                          id={labelId}
+                          id={`${row.id}-${item.id}`}
                           align="center"
                           variant="body"
                           scope="row"
+                          key={`${row.id}-${item.id}`}
                         >
-                          {val}
+                          {row[item.id]}
                         </TableCell>
                       );
                     })}

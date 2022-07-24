@@ -16,6 +16,7 @@ import splitStrings from "../../utils/splitStrings";
 // types
 import {
   CountriesDataKeys,
+  Filter,
   FormattedCountriesData,
   GlobalData
 } from "../../types";
@@ -33,42 +34,45 @@ const Home = () => {
   const [countriesData, setCountriesData] = useState<FormattedCountriesData[]>(
     []
   );
+  const [globalData, setGlobalData] = useState<GlobalData>();
   const [filteredData, setFilteredData] = useState<FormattedCountriesData[]>(
     []
   );
-  const [globalData, setGlobalData] = useState<GlobalData>();
-  const [filter, setFilter] = useState<keyof CountriesDataKeys>("country");
-  const [filterVal, setFilterVal] = useState<string>("");
+  const [filter, setFilter] = useState<Filter>({
+    filterName: "country",
+    value: ""
+  });
   const [loading, setLoading] = useState<boolean>(false);
 
   /* helper functions */
   const handleFilterChange = (event: SelectChangeEvent) => {
-    setFilter(event.target.value as keyof CountriesDataKeys);
+    setFilter({
+      ...filter,
+      filterName: event.target.value as keyof CountriesDataKeys
+    });
   };
 
   const handleFilterData = useCallback(
     (inputValue: string) => {
-      setFilterVal(inputValue);
+      setFilter({ ...filter, value: inputValue });
       const filteredRecords = countriesData.filter((dataObj) => {
-        if (dataObj[filter].toString().toLowerCase().includes(inputValue)) {
+        if (
+          dataObj[filter.filterName]
+            .toString()
+            .toLowerCase()
+            .includes(inputValue)
+        ) {
           return dataObj;
         } else {
           return false;
         }
       });
-      // const sortedRecords = filteredRecords.sort((a, b) => {
-      //   return (
-      //     a[filter].toString().toLowerCase().indexOf(inputValue) -
-      //     b[filter].toString().toLowerCase().indexOf(inputValue)
-      //   );
-      // });
-      // console.log({ sortedRecords }, { filteredRecords });
       setFilteredData(filteredRecords);
     },
     [countriesData, filter]
   );
 
-  const fetchCovidData = () => {
+  const fetchCovidData = useCallback(() => {
     setLoading(true);
     fetch("https://api.covid19api.com/summary")
       .then((res) => res.json())
@@ -77,11 +81,12 @@ const Home = () => {
         setGlobalData(formatGlobalData(result.Global));
         setCountriesData(formatCountryData(result.Countries));
         setFilteredData(formatCountryData(result.Countries));
+        setFilter({ filterName: filter.filterName, value: "" });
       })
       .catch((err) => {
         console.log(err);
       });
-  };
+  }, [filter.filterName]);
 
   /* Use Effects */
   useEffect(() => {
@@ -90,10 +95,10 @@ const Home = () => {
 
   // for filtering the data if user changes the filter while input value is not empty
   useEffect(() => {
-    if (filterVal) {
-      handleFilterData(filterVal);
+    if (filter.value) {
+      handleFilterData(filter.value);
     }
-  }, [filterVal, handleFilterData]);
+  }, [filter.value, handleFilterData]);
 
   if (loading) {
     return (
@@ -145,12 +150,12 @@ const Home = () => {
               </Grid>
               <Grid item>
                 <Select
-                  value={filter}
+                  value={filter.filterName}
                   onChange={handleFilterChange}
                   className={classes.filter}
                 >
                   {headerCells.map((item) => (
-                    <MenuItem value={item.id}>
+                    <MenuItem value={item.id} key={`${item.id}`}>
                       {splitStrings(item.id, true)}
                     </MenuItem>
                   ))}
@@ -177,6 +182,6 @@ const Home = () => {
       </Grid>
     </Box>
   );
-};
+};;;;
 
 export default Home;

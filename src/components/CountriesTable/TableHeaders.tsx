@@ -1,13 +1,6 @@
 import React from "react";
 // material-ui
-import {
-  Box,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel
-} from "@mui/material";
-import { visuallyHidden } from "@mui/utils";
+import { TableCell, TableHead, TableRow, TableSortLabel } from "@mui/material";
 // types
 import { CountriesDataKeys, TableHeadersProps } from "../../types";
 // fixtures
@@ -29,7 +22,6 @@ const TableHeaders = ({ order, orderBy, onRequestSort }: TableHeadersProps) => {
             sx={{ fontSize: 18, fontWeight: "bold" }}
             key={headCell.id}
             align="center"
-            padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
@@ -38,11 +30,6 @@ const TableHeaders = ({ order, orderBy, onRequestSort }: TableHeadersProps) => {
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </Box>
-              ) : null}
             </TableSortLabel>
           </TableCell>
         ))}
