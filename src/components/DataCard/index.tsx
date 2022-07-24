@@ -3,6 +3,7 @@ import { Card, CardContent, Grid, Typography } from "@mui/material";
 import useStyles from "./styles";
 
 const DataCard = ({ title, value }: DataCardProps) => {
+  /* classes */
   const classes = useStyles();
   return (
     <Grid item xs={2}>

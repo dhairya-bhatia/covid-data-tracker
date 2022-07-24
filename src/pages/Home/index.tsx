@@ -3,9 +3,11 @@ import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import RefreshIcon from "@mui/icons-material/Refresh";
 // components
 import DataCard from "../../components/DataCard";
 import CountriesTable from "../../components/CountriesTable";
@@ -24,8 +26,10 @@ import useStyles from "./styles";
 import { headerCells } from "../../fixtures";
 
 const Home = () => {
+  /* classes */
   const classes = useStyles();
 
+  /* states */
   const [countriesData, setCountriesData] = useState<FormattedCountriesData[]>(
     []
   );
@@ -37,6 +41,7 @@ const Home = () => {
   const [filterVal, setFilterVal] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
+  /* helper functions */
   const handleFilterChange = (event: SelectChangeEvent) => {
     setFilter(event.target.value as keyof CountriesDataKeys);
   };
@@ -63,7 +68,7 @@ const Home = () => {
     [countriesData, filter]
   );
 
-  useEffect(() => {
+  const fetchCovidData = () => {
     setLoading(true);
     fetch("https://api.covid19api.com/summary")
       .then((res) => res.json())
@@ -76,6 +81,11 @@ const Home = () => {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  /* Use Effects */
+  useEffect(() => {
+    fetchCovidData();
   }, []);
 
   // for filtering the data if user changes the filter while input value is not empty
@@ -114,29 +124,50 @@ const Home = () => {
             );
           })}
         </Grid>
-        <Grid item xs={6} />
-        <Grid container item xs={6} spacing={2}>
-          <Grid item>
-            <TextField
-              label="Add Filter"
-              variant="outlined"
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterData(event.target.value)
-              }
-            />
+        <Grid
+          container
+          item
+          xs={12}
+          spacing={2}
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Grid item xs={10}>
+            <Grid container spacing={2}>
+              <Grid item>
+                <TextField
+                  label="Add Filter"
+                  variant="outlined"
+                  onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                    handleFilterData(event.target.value)
+                  }
+                />
+              </Grid>
+              <Grid item>
+                <Select
+                  value={filter}
+                  onChange={handleFilterChange}
+                  className={classes.filter}
+                >
+                  {headerCells.map((item) => (
+                    <MenuItem value={item.id}>
+                      {splitStrings(item.id, true)}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item>
-            <Select
-              value={filter}
-              onChange={handleFilterChange}
-              className={classes.filter}
+            <Button
+              aria-label="refresh"
+              startIcon={<RefreshIcon />}
+              variant="contained"
+              color="primary"
+              onClick={fetchCovidData}
             >
-              {headerCells.map((item) => (
-                <MenuItem value={item.id}>
-                  {splitStrings(item.id, true)}
-                </MenuItem>
-              ))}
-            </Select>
+              Refresh Data
+            </Button>
           </Grid>
         </Grid>
 

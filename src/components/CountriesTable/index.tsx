@@ -12,11 +12,11 @@ import { CountriesDataKeys, Order, TableDataProps } from "../../types";
 import TableHeaders from "./TableHeaders";
 
 const CountriesTable = ({ rows }: TableDataProps) => {
-  // states
+  /* states */
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof CountriesDataKeys>("country");
 
-  // functions
+  /* helper functions */
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
     property: keyof CountriesDataKeys
@@ -63,28 +63,25 @@ const CountriesTable = ({ rows }: TableDataProps) => {
               onRequestSort={handleRequestSort}
             />
             <TableBody>
-              {rows
-                .slice()
-                .sort(getComparator(order, orderBy))
-                .map((row, index) => {
-                  const labelId = `enhanced-table-checkbox-${index}`;
-                  return (
-                    <TableRow>
-                      {Object.entries(row).map(([key, val]) => {
-                        return (
-                          <TableCell
-                            id={labelId}
-                            align="center"
-                            variant="body"
-                            scope="row"
-                          >
-                            {val}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  );
-                })}
+              {rows.sort(getComparator(order, orderBy)).map((row, index) => {
+                const labelId = `enhanced-table-checkbox-${index}`;
+                return (
+                  <TableRow>
+                    {Object.entries(row).map(([key, val]) => {
+                      return (
+                        <TableCell
+                          id={labelId}
+                          align="center"
+                          variant="body"
+                          scope="row"
+                        >
+                          {val}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>

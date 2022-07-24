@@ -14,6 +14,7 @@ import { CountriesDataKeys, TableHeadersProps } from "../../types";
 import { headerCells } from "../../fixtures";
 
 const TableHeaders = ({ order, orderBy, onRequestSort }: TableHeadersProps) => {
+  /* helper functions */
   const createSortHandler =
     (property: keyof CountriesDataKeys) =>
     (event: React.MouseEvent<unknown>) => {
