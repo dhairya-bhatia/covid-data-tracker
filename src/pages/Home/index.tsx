@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Select from "@mui/material/Select";
 import RefreshIcon from "@mui/icons-material/Refresh";
 // components
 import DataCard from "../../components/DataCard";
@@ -31,10 +31,10 @@ const Home = () => {
   const classes = useStyles();
 
   /* states */
+  const [globalData, setGlobalData] = useState<GlobalData>();
   const [countriesData, setCountriesData] = useState<FormattedCountriesData[]>(
     []
   );
-  const [globalData, setGlobalData] = useState<GlobalData>();
   const [filteredData, setFilteredData] = useState<FormattedCountriesData[]>(
     []
   );
@@ -45,32 +45,27 @@ const Home = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   /* helper functions */
-  const handleFilterChange = (event: SelectChangeEvent) => {
-    setFilter({
-      ...filter,
-      filterName: event.target.value as keyof CountriesDataKeys
-    });
-  };
 
-  const handleFilterData = useCallback(
-    (inputValue: string) => {
-      setFilter({ ...filter, value: inputValue });
-      const filteredRecords = countriesData.filter((dataObj) => {
-        if (
-          dataObj[filter.filterName]
-            .toString()
-            .toLowerCase()
-            .includes(inputValue)
-        ) {
-          return dataObj;
-        } else {
-          return false;
-        }
-      });
-      setFilteredData(filteredRecords);
-    },
-    [countriesData, filter]
-  );
+  // filters table data according to the applied Filter
+  const handleFilterRecords = (filter: Filter) => {
+    const filteredRecords = countriesData.filter((dataObj) => {
+      if (
+        dataObj[filter.filterName]
+          .toString()
+          .toLowerCase()
+          .includes(filter.value)
+      ) {
+        return dataObj;
+      } else {
+        return false;
+      }
+    });
+    setFilteredData(filteredRecords);
+  };
+  const handleFilterChange = (filter: Filter) => {
+    setFilter(filter);
+    handleFilterRecords(filter);
+  };
 
   const fetchCovidData = useCallback(() => {
     setLoading(true);
@@ -92,13 +87,6 @@ const Home = () => {
   useEffect(() => {
     fetchCovidData();
   }, []);
-
-  // for filtering the data if user changes the filter while input value is not empty
-  useEffect(() => {
-    if (filter.value) {
-      handleFilterData(filter.value);
-    }
-  }, [filter.value, handleFilterData]);
 
   if (loading) {
     return (
@@ -141,17 +129,23 @@ const Home = () => {
             <Grid container spacing={2}>
               <Grid item>
                 <TextField
+                  value={filter.value}
                   label="Add Filter"
                   variant="outlined"
                   onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                    handleFilterData(event.target.value)
+                    handleFilterChange({ ...filter, value: event.target.value })
                   }
                 />
               </Grid>
               <Grid item>
                 <Select
                   value={filter.filterName}
-                  onChange={handleFilterChange}
+                  onChange={(event) =>
+                    handleFilterChange({
+                      ...filter,
+                      filterName: event.target.value as keyof CountriesDataKeys
+                    })
+                  }
                   className={classes.filter}
                 >
                   {headerCells.map((item) => (
@@ -182,6 +176,6 @@ const Home = () => {
       </Grid>
     </Box>
   );
-};;;;
+};
 
 export default Home;
