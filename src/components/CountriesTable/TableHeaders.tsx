@@ -5,8 +5,11 @@ import { TableCell, TableHead, TableRow, TableSortLabel } from "@mui/material";
 import { CountriesDataKeys, TableHeadersProps } from "../../types";
 // fixtures
 import { headerCells } from "../../fixtures";
+// styles
+import useStyles from "./styles";
 
 const TableHeaders = ({ order, orderBy, onRequestSort }: TableHeadersProps) => {
+  const classes = useStyles();
   /* helper functions */
   const createSortHandler =
     (property: keyof CountriesDataKeys) =>
@@ -19,7 +22,7 @@ const TableHeaders = ({ order, orderBy, onRequestSort }: TableHeadersProps) => {
       <TableRow>
         {headerCells.map((headCell) => (
           <TableCell
-            sx={{ fontSize: 18, fontWeight: "bold", width: 220 }}
+            className={classes.heading}
             key={headCell.id}
             align="center"
             sortDirection={orderBy === headCell.id ? order : false}

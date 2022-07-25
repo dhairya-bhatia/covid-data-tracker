@@ -89,6 +89,7 @@ const Home = () => {
   /* Use Effects */
   useEffect(() => {
     fetchCovidData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // this will run everytime the filter is updated
@@ -99,14 +100,7 @@ const Home = () => {
   // UI loading state
   if (loading) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          height: "100vh",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
+      <Box className={classes.loaderContainer}>
         <CircularProgress size={50} />
       </Box>
     );

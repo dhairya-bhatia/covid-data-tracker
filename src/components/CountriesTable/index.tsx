@@ -13,8 +13,11 @@ import { CountriesDataKeys, Order, TableDataProps } from "../../types";
 import TableHeaders from "./TableHeaders";
 // fixtures
 import { headerCells } from "../../fixtures";
+// styles
+import useStyles from "./styles";
 
 const CountriesTable = ({ rows }: TableDataProps) => {
+  const classes = useStyles();
   /* states */
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof CountriesDataKeys>("country");
@@ -52,44 +55,39 @@ const CountriesTable = ({ rows }: TableDataProps) => {
   }
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
-        <TableContainer sx={{ maxHeight: "72vh" }}>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-            stickyHeader
-          >
-            <TableHeaders
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={handleRequestSort}
-            />
-            <TableBody>
-              {rows.sort(getComparator(order, orderBy)).map((row, index) => {
-                return (
-                  <TableRow key={row.id}>
-                    {headerCells.map((item) => {
-                      return (
-                        <TableCell
-                          id={`${row.id}-${item.id}`}
-                          align="center"
-                          variant="body"
-                          scope="row"
-                          key={`${row.id}-${item.id}`}
-                        >
-                          {row[item.id]}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
-    </Box>
+    <Paper className={classes.root}>
+      <TableContainer className={classes.tableContainer}>
+        <Table aria-labelledby="Countrywise Covid cases table" stickyHeader>
+          <TableHeaders
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={handleRequestSort}
+            aria-labelledby="tableHeader"
+          />
+          <TableBody>
+            {rows.sort(getComparator(order, orderBy)).map((row) => {
+              return (
+                <TableRow key={row.id}>
+                  {headerCells.map((item) => {
+                    return (
+                      <TableCell
+                        id={`${row.id}-${item.id}`}
+                        align="center"
+                        variant="body"
+                        scope="row"
+                        key={`${row.id}-${item.id}`}
+                      >
+                        {row[item.id]}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   );
 };
 
