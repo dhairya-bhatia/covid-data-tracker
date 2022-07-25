@@ -51,18 +51,24 @@ const Home = () => {
 
   // filters table data according to the applied Filter
   const handleFilterRecords = useCallback(() => {
-    const filteredRecords = countriesData.filter((dataObj) => {
-      if (
-        dataObj[filter.filterName]
-          .toString()
-          .toLowerCase()
-          .includes(filter.value)
-      ) {
-        return dataObj;
-      } else {
-        return false;
-      }
-    });
+    const filteredRecords = countriesData
+      .filter((dataObj) => {
+        if (
+          dataObj[filter.filterName]
+            .toString()
+            .toLowerCase()
+            .includes(filter.value)
+        ) {
+          return dataObj;
+        } else {
+          return false;
+        }
+      })
+      .sort(
+        (a, b) =>
+          a[filter.filterName].toString().toLowerCase().indexOf(filter.value) -
+          b[filter.filterName].toString().toLowerCase().indexOf(filter.value)
+      );
     setFilteredData(filteredRecords);
   }, [countriesData, filter.filterName, filter.value]);
 
@@ -94,8 +100,10 @@ const Home = () => {
 
   // this will run everytime the filter is updated
   useEffect(() => {
-    handleFilterRecords();
-  }, [filter.filterName, filter.value, handleFilterRecords]);
+    if (countriesData.length) {
+      handleFilterRecords();
+    }
+  }, [countriesData, filter.filterName, filter.value, handleFilterRecords]);
 
   // UI loading state
   if (loading) {
@@ -136,23 +144,28 @@ const Home = () => {
                   label="Add Filter"
                   variant="outlined"
                   onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                    handleFilterChange({ ...filter, value: event.target.value })
+                    handleFilterChange({
+                      ...filter,
+                      value: event.target.value
+                    })
                   }
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
-                          aria-label="clear filter value"
+                          aria-label="clearFilterButton"
                           onClick={() =>
                             handleFilterChange({ ...filter, value: "" })
                           }
                           edge="end"
+                          role="button"
                         >
                           <ClearIcon fontSize="small" />
                         </IconButton>
                       </InputAdornment>
                     )
                   }}
+                  role="searchbox"
                 />
               </Grid>
               <Grid item>
@@ -165,9 +178,14 @@ const Home = () => {
                     })
                   }
                   className={classes.filter}
+                  role="menu"
                 >
                   {headerCells.map((item) => (
-                    <MenuItem value={item.id} key={`${item.id}`}>
+                    <MenuItem
+                      value={item.id}
+                      key={`${item.id}`}
+                      role="menuitem"
+                    >
                       {splitStrings(item.id, true)}
                     </MenuItem>
                   ))}
@@ -177,7 +195,7 @@ const Home = () => {
           </Grid>
           <Grid item>
             <Button
-              aria-label="refresh"
+              aria-label="refreshButton"
               startIcon={<RefreshIcon />}
               variant="contained"
               color="primary"
@@ -189,11 +207,11 @@ const Home = () => {
         </Grid>
 
         <Grid item xs={12}>
-          <CountriesTable rows={filteredData} />
+          <CountriesTable rows={filteredData} filterValue={filter.value} />
         </Grid>
       </Grid>
     </Box>
   );
-};;;
+};
 
 export default Home;

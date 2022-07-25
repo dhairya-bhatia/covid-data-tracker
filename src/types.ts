@@ -5,6 +5,7 @@ export interface headers {
 
 export interface TableDataProps {
   rows: FormattedCountriesData[];
+  filterValue: string;
 }
 
 export interface CountriesData {
@@ -62,3 +63,5 @@ export interface Filter {
   filterName: keyof CountriesDataKeys;
   value: string;
 }
+export type getRowsFun = () => FormattedCountriesData[];
+
