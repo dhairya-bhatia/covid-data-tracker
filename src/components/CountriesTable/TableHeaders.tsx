@@ -19,7 +19,7 @@ const TableHeaders = ({ order, orderBy, onRequestSort }: TableHeadersProps) => {
       <TableRow>
         {headerCells.map((headCell) => (
           <TableCell
-            sx={{ fontSize: 18, fontWeight: "bold" }}
+            sx={{ fontSize: 18, fontWeight: "bold", width: 220 }}
             key={headCell.id}
             align="center"
             sortDirection={orderBy === headCell.id ? order : false}

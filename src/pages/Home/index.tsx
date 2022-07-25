@@ -7,7 +7,9 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
+// mui-icons
 import RefreshIcon from "@mui/icons-material/Refresh";
+import ClearIcon from "@mui/icons-material/Clear";
 // components
 import DataCard from "../../components/DataCard";
 import CountriesTable from "../../components/CountriesTable";
@@ -25,6 +27,7 @@ import { formatCountryData, formatGlobalData } from "../../utils/formatData";
 // styles
 import useStyles from "./styles";
 import { headerCells } from "../../fixtures";
+import { IconButton, InputAdornment } from "@mui/material";
 
 const Home = () => {
   /* classes */
@@ -47,7 +50,7 @@ const Home = () => {
   /* helper functions */
 
   // filters table data according to the applied Filter
-  const handleFilterRecords = (filter: Filter) => {
+  const handleFilterRecords = useCallback(() => {
     const filteredRecords = countriesData.filter((dataObj) => {
       if (
         dataObj[filter.filterName]
@@ -61,13 +64,13 @@ const Home = () => {
       }
     });
     setFilteredData(filteredRecords);
-  };
+  }, [countriesData, filter.filterName, filter.value]);
+
   const handleFilterChange = (filter: Filter) => {
     setFilter(filter);
-    handleFilterRecords(filter);
   };
 
-  const fetchCovidData = useCallback(() => {
+  const fetchCovidData = () => {
     setLoading(true);
     fetch("https://api.covid19api.com/summary")
       .then((res) => res.json())
@@ -81,13 +84,19 @@ const Home = () => {
       .catch((err) => {
         console.log(err);
       });
-  }, [filter.filterName]);
+  };
 
   /* Use Effects */
   useEffect(() => {
     fetchCovidData();
   }, []);
 
+  // this will run everytime the filter is updated
+  useEffect(() => {
+    handleFilterRecords();
+  }, [filter.filterName, filter.value, handleFilterRecords]);
+
+  // UI loading state
   if (loading) {
     return (
       <Box
@@ -135,6 +144,21 @@ const Home = () => {
                   onChange={(event: ChangeEvent<HTMLInputElement>) =>
                     handleFilterChange({ ...filter, value: event.target.value })
                   }
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="clear filter value"
+                          onClick={() =>
+                            handleFilterChange({ ...filter, value: "" })
+                          }
+                          edge="end"
+                        >
+                          <ClearIcon fontSize="small" />
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
                 />
               </Grid>
               <Grid item>
@@ -176,6 +200,6 @@ const Home = () => {
       </Grid>
     </Box>
   );
-};
+};;;
 
 export default Home;
