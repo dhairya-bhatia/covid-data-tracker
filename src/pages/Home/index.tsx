@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 // material-ui
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -49,31 +49,53 @@ const Home = () => {
 
   /* helper functions */
 
+  const debounce = useCallback((func: any, delay: number = 200) => {
+    let timer: NodeJS.Timeout;
+    return (...args: any) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func(...args);
+      }, delay);
+    };
+  }, []);
+
   // filters table data according to the applied Filter
-  const handleFilterRecords = useCallback(() => {
-    const filteredRecords = countriesData
-      .filter((dataObj) => {
-        if (
-          dataObj[filter.filterName]
-            .toString()
-            .toLowerCase()
-            .includes(filter.value)
-        ) {
-          return dataObj;
-        } else {
-          return false;
-        }
-      })
-      .sort(
-        (a, b) =>
-          a[filter.filterName].toString().toLowerCase().indexOf(filter.value) -
-          b[filter.filterName].toString().toLowerCase().indexOf(filter.value)
-      );
-    setFilteredData(filteredRecords);
-  }, [countriesData, filter.filterName, filter.value]);
+  const handleFilterRecords = useCallback(
+    (filter: Filter) => {
+      const filteredRecords = countriesData
+        .filter((dataObj) => {
+          if (
+            dataObj[filter.filterName]
+              .toString()
+              .toLowerCase()
+              .includes(filter.value)
+          ) {
+            return dataObj;
+          } else {
+            return false;
+          }
+        })
+        .sort(
+          (a, b) =>
+            a[filter.filterName]
+              .toString()
+              .toLowerCase()
+              .indexOf(filter.value) -
+            b[filter.filterName].toString().toLowerCase().indexOf(filter.value)
+        );
+      setFilteredData(filteredRecords);
+    },
+    [countriesData]
+  );
+
+  const debounceHandleFilterRecords = useMemo(
+    () => debounce(handleFilterRecords),
+    [debounce, handleFilterRecords]
+  );
 
   const handleFilterChange = (filter: Filter) => {
     setFilter(filter);
+    debounceHandleFilterRecords(filter);
   };
 
   const fetchCovidData = () => {
@@ -97,13 +119,6 @@ const Home = () => {
     fetchCovidData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // this will run everytime the filter is updated
-  useEffect(() => {
-    if (countriesData.length) {
-      handleFilterRecords();
-    }
-  }, [countriesData, filter.filterName, filter.value, handleFilterRecords]);
 
   // UI loading state
   if (loading) {
